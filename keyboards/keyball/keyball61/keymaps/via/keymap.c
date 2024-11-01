@@ -22,21 +22,45 @@ QMK Advanced Keycodes -- https://docs.qmk.fm/feature_advanced_keycodes
 
 #include QMK_KEYBOARD_H
 #include "quantum.h"
-#include "options.inl"
+#include "rgblight.h"
+
+#ifdef OLED_ENABLE
+
+#include "lib/oledkit/oledkit.h"
+
+void oledkit_render_info_user(void) {
+    keyball_oled_render_keyinfo();
+    keyball_oled_render_ballinfo();
+    keyball_oled_render_layerinfo();
+}
+#endif
+
+typedef union {
+  uint32_t raw;
+  struct {
+    bool     rgb_layer_change :1;
+  };
+} user_config_t;
+
+user_config_t user_config;
 
 enum custom_keycodes {
     PFX = SAFE_RANGE,
     INSPE,
     INSPP,
-    COPY
+    COPY,
+    RGB_LYR
 };
 
-#include "macros.inl"
+// Creating layer aliases
+#define DEFAULT_LAYER 0
+#define MOUSE_LAYER 1
+#define TENKEY_LAYER 2
+#define FUNCTION_LAYER 3
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  // DEFAULT
-  [0] = LAYOUT(
+  [DEFAULT_LAYER] = LAYOUT(
     KC_ESC   , KC_1    , KC_2     , KC_3     , KC_4        , KC_5         ,                                     KC_6   , KC_7    , KC_8     , KC_9     , KC_0     , KC_MINS  ,
     KC_GRV   , KC_Q    , KC_W     , KC_E     , KC_R        , KC_T         ,                                     KC_Y   , KC_U    , KC_I     , KC_O     , KC_P     , KC_BSLS  ,
     KC_CAPS  , KC_A    , KC_S     , KC_D     , KC_F        , KC_G         ,                                     KC_H   , KC_J    , KC_K     , KC_L     , KC_SCLN  , KC_QUOT  ,
@@ -44,17 +68,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_LCTL  , COPY    , KC_LWIN  , KC_LALT  , LT(2,KC_SPC), LT(3,KC_TAB) , QK_KB_7 ,        LT(4,KC_ENT),LT(5,KC_BSPC),                                 TG(1)    , KC_INS
   ),
 
-  // MOUSE
-  [1] = LAYOUT(
+  [MOUSE_LAYER] = LAYOUT(
     XXXXXXX  , KC_F1   , KC_F2   , KC_F3   , KC_F4   , KC_F5   ,                                   KC_F6     , KC_F7      , KC_F8      , KC_F9      , KC_F10     , KC_F11   ,
     XXXXXXX  , XXXXXXX , XXXXXXX , XXXXXXX , XXXXXXX , XXXXXXX ,                                   C(KC_A)   , C(KC_C)    , C(KC_V)    , C(KC_X)    , C(KC_Z)    , KC_F12   ,
-    XXXXXXX  , KC_LGUI , KC_LALT , KC_LCTL , KC_LSFT , TG(1)   ,                                   KC_BTN3   , KC_BTN1    , KC_BTN2    , XXXXXXX    , QK_KB_7    , QK_KB_13 ,
+    XXXXXXX  , KC_LGUI , KC_LALT , KC_LCTL , KC_LSFT , XXXXXXX ,                                   KC_BTN3   , KC_BTN1    , KC_BTN2    , XXXXXXX    , QK_KB_7    , QK_KB_13 ,
     _______  , XXXXXXX , XXXXXXX , XXXXXXX , XXXXXXX , XXXXXXX , XXXXXXX ,               XXXXXXX , QK_KB_6   , KC_HOME    , KC_PGDN    , KC_PGUP    , KC_END     , QK_KB_15 ,
     _______  , _______ , _______ , _______ , _______ , _______ , _______ ,               _______ , _______   ,                                        _______    , _______
   ),
 
-  // L NAVIGATION & SCREENSHOT, R 10 KEY
-  [2] = LAYOUT(
+  [TENKEY_LAYER] = LAYOUT(
     PFX      , _______    , _______   , _______  ,_______    , _______  ,                                     KC_PEQL  , KC_P7    , KC_P8    , KC_P9    , KC_PSLS  , _______  ,
     INSPE    , XXXXXXX    ,LCA(KC_END), KC_UP    ,LCA(KC_DEL), XXXXXXX  ,                                     KC_PAST  , KC_P4    , KC_P5    , KC_P6    , KC_PPLS  , _______  ,
     INSPP    , XXXXXXX    , KC_LEFT   , KC_DOWN  ,KC_RIGHT   , XXXXXXX  ,                                     KC_PCMM  , KC_P1    , KC_P2    , KC_P3    , KC_PMNS  , _______  ,
@@ -62,12 +84,85 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______  , _______    , _______   , _______  ,_______    , _______  , _______     ,            _______  , _______  ,                                  _______  , _______
   ),
 
-  // RGB & MOUSE SETTINGS, BOOTLOADER, EEPROM CLEAR
-  [3] = LAYOUT(
+  [FUNCTION_LAYER] = LAYOUT(
     _______  , AML_TO   , AML_I50  , AML_D50  , _______  , _______  ,                                  _______  , _______  , _______  , _______  , _______  , _______  ,
     _______  , _______  , _______  , _______  , _______  , _______  ,                                  _______  , _______  , _______  , _______  , _______  , _______  ,
     _______  , LSG(KC_S), _______  , _______  , _______  , _______  ,                                  CPI_D1K  , CPI_D100 , CPI_I100 , CPI_I1K  , KBC_SAVE , KBC_RST  ,
     XXXXXXX  , _______  , SCRL_DVD , SCRL_DVI , SCRL_MO  , SCRL_TO  , EE_CLR   ,            EE_CLR   , KC_HOME  , KC_PGDN  , KC_PGUP  , KC_END   , _______  , _______  ,
-    QK_BOOT  , _______  , KC_LEFT  , KC_DOWN  , KC_UP    , KC_RGHT  , _______  ,            _______  , KC_BSPC  ,                                  _______  , _______
+    QK_BOOT  , _______  , KC_LEFT  , KC_DOWN  , KC_UP    , KC_RGHT  , _______  ,            _______  , KC_BSPC  ,                                  RGB_LYR  , _______
   ),
 };
+
+void pointing_device_init_user(void) {
+    set_auto_mouse_enable(true);
+}
+
+void keyboard_post_init_user(void) {
+    user_config.raw = eeconfig_read_user();
+
+    if(user_config.rgb_layer_change) {
+        rgblight_enable_noeeprom();
+        rgblight_sethsv_noeeprom(HSV_RED);
+        rgblight_mode_noeeprom(1);
+    }
+}
+
+void eeconfig_init_user(void) {
+    user_config.raw = 0;
+    user_config.rgb_layer_change = true;
+    eeconfig_update_user(user_config.raw);
+
+    rgblight_enable();
+    rgblight_sethsv(HSV_RED);
+    rgblight_mode(1);
+}
+
+// clang-format on
+layer_state_t layer_state_set_user(layer_state_t state) {
+    // Auto enable scroll mode when the highest layer is 3
+    keyball_set_scroll_mode(get_highest_layer(state) == 3);
+
+    switch(get_highest_layer(state)) {
+        case MOUSE_LAYER:
+            if (user_config.rgb_layer_change) { rgblight_sethsv_noeeprom(HSV_WHITE); rgblight_mode_noeeprom(1); }
+            break;
+        case TENKEY_LAYER:
+            if (user_config.rgb_layer_change) { rgblight_sethsv_noeeprom(HSV_MAGENTA); rgblight_mode_noeeprom(1); }
+            break;
+        case FUNCTION_LAYER:
+            if (user_config.rgb_layer_change) { rgblight_sethsv_noeeprom(30, 255, 255); rgblight_mode_noeeprom(1); }
+            break;
+        default:
+            if (user_config.rgb_layer_change) { rgblight_sethsv_noeeprom(HSV_RED); rgblight_mode_noeeprom(1); }
+            break;
+    }
+
+    return state;
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t* record) {
+    #include "macros.inl"
+
+    switch(keycode) {
+        case RGB_LYR:
+            if (record->event.pressed) {
+                user_config.rgb_layer_change ^= 1;
+                eeconfig_update_user(user_config.raw);
+                if (user_config.rgb_layer_change) { layer_state_set(layer_state); }
+            }
+            return false;
+        case RGB_MODE_FORWARD ... RGB_MODE_GRADIENT:
+            if (record->event.pressed) {
+                if(user_config.rgb_layer_change) {
+                    user_config.rgb_layer_change = false;
+                    eeconfig_update_user(user_config.raw);
+                }
+            }
+            return true;
+            break;
+        default:
+            return true;
+    }
+
+    return true;
+}
