@@ -20,6 +20,9 @@ QMK Basic Keycodes -- https://docs.qmk.fm/keycodes_basic
 QMK Advanced Keycodes -- https://docs.qmk.fm/feature_advanced_keycodes
 */
 
+// qmk compile -kb keyball/keyball61 -km via
+// qmk flash -kb keyball/keyball61 -km via
+
 #include QMK_KEYBOARD_H
 #include "quantum.h"
 #include "rgblight.h"
