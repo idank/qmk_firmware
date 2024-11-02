@@ -29,7 +29,7 @@ RGB_MATRIX_ENABLE = no      # Enable RGB_MATRIX (not work yet)
 RGB_MATRIX_DRIVER = ws2812
 
 # Do not enable SLEEP_LED_ENABLE. it uses the same timer as BACKLIGHT_ENABLE
-SLEEP_LED_ENABLE = no       # Breathing sleep LED during USB suspend
+SLEEP_LED_ENABLE = yes       # Breathing sleep LED during USB suspend
 
 # To support OLED
 OLED_ENABLE = no                # Please Enable this in each keymaps.
