@@ -5,3 +5,4 @@ SRC += lib/common.c lib/mux.c
 
 ANALOG_DRIVER_REQUIRED = yes
 
+AUTOCORRECT_ENABLE = yes
