@@ -402,10 +402,12 @@
 //   woudl      -> would
 //   yeild      -> yield
 
-#define AUTOCORRECTION_MIN_LENGTH 5  // "abotu"
-#define AUTOCORRECTION_MAX_LENGTH 10  // "auxilliary"
+#define AUTOCORRECT_MIN_LENGTH 5  // "abotu"
+#define AUTOCORRECT_MAX_LENGTH 10  // "auxilliary"
 
-static const uint8_t autocorrection_data[5967] PROGMEM = {108, 67, 0, 4, 212, 0,
+#define DICTIONARY_SIZE 5967
+
+static const uint8_t autocorrect_data[DICTIONARY_SIZE] PROGMEM = {108, 67, 0, 4, 212, 0,
   6, 236, 0, 7, 100, 1, 8, 15, 3, 9, 169, 8, 10, 204, 8, 11, 68, 9, 12, 246, 9,
   14, 0, 10, 15, 28, 10, 16, 79, 11, 17, 129, 11, 18, 175, 13, 19, 227, 13, 21,
   253, 13, 22, 194, 15, 23, 121, 17, 24, 201, 20, 25, 210, 20, 26, 8, 21, 28,

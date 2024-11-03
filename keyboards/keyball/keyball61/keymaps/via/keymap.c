@@ -133,7 +133,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
             if (user_config.rgb_layer_change) { rgblight_sethsv_noeeprom(HSV_MAGENTA); rgblight_mode_noeeprom(1); }
             break;
         case FUNCTION_LAYER:
-            if (user_config.rgb55_layer_change) { rgblight_sethsv_noeeprom(30, 255, 255); rgblight_mode_noeeprom(1); } // Yeller
+            if (user_config.rgb_layer_change) { rgblight_sethsv_noeeprom(29, 255, 255); rgblight_mode_noeeprom(1); } // Yeller
             break;
         default:
             if (user_config.rgb_layer_change) { rgblight_sethsv_noeeprom(HSV_RED); rgblight_mode_noeeprom(1); }
@@ -183,6 +183,7 @@ void refresh_rgb(void) {
         rgblight_wakeup();
     }
 }
+
 void check_rgb_timeout(void) {
     if (!is_rgb_timeout && timer_elapsed32(key_timer) > RGBLIGHT_TIMEOUT) // check if RGB has already timeout and if enough time has passed
     {
@@ -190,6 +191,7 @@ void check_rgb_timeout(void) {
         is_rgb_timeout = true;
     }
 }
+
 /* Then, call the above functions from QMK's built in post processing functions like so */
 /* Runs at the end of each scan loop, check if RGB timeout has occured or not */
 void housekeeping_task_user(void) {
@@ -197,6 +199,7 @@ void housekeeping_task_user(void) {
     check_rgb_timeout();
 #endif
 }
+
 /* Runs after each key press, check if activity occurred */
 void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
 #ifdef RGBLIGHT_TIMEOUT
@@ -204,6 +207,7 @@ void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
         refresh_rgb();
 #endif
 }
+
 /* Runs after each encoder tick, check if activity occurred */
 void post_encoder_update_user(uint8_t index, bool clockwise) {
 #ifdef RGBLIGHT_TIMEOUT
