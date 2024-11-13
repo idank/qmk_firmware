@@ -135,7 +135,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         case FUNCTION_LAYER:
             if (user_config.rgb_layer_change) { rgblight_sethsv_noeeprom(29, 255, 255); rgblight_mode_noeeprom(1); } // Yeller
             break;
-        default:
+        case DEFAULT_LAYER:
             if (user_config.rgb_layer_change) { rgblight_sethsv_noeeprom(HSV_RED); rgblight_mode_noeeprom(1); }
             break;
     }
@@ -169,6 +169,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
 
     return true;
 }
+
+// ***************** RGB TIMEOUT *****************
 
 static uint32_t key_timer;           // timer for last keyboard activity, use 32bit value and function to make longer idle time possible
 static void refresh_rgb(void);       // refreshes the activity timer and RGB, invoke whenever any activity happens
