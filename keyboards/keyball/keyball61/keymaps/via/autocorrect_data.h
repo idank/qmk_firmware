@@ -404,12 +404,12 @@
 //   woudl      -> would
 //   yeild      -> yield
 
-#define AUTOCORRECTION_MIN_LENGTH 4  // "fcuk"
-#define AUTOCORRECTION_MAX_LENGTH 10  // "auxilliary"
+#define AUTOCORRECT_MIN_LENGTH 4  // "fcuk"
+#define AUTOCORRECT_MAX_LENGTH 10  // "auxilliary"
 
 #define DICTIONARY_SIZE 5992
 
-static const uint8_t autocorrection_data[DICTIONARY_SIZE] PROGMEM = {108, 67, 0, 4, 212, 0,
+static const uint8_t autocorrect_data[DICTIONARY_SIZE] PROGMEM = {108, 67, 0, 4, 212, 0,
   6, 236, 0, 7, 100, 1, 8, 15, 3, 9, 169, 8, 10, 204, 8, 11, 80, 9, 12, 2, 10,
   14, 12, 10, 15, 53, 10, 16, 104, 11, 17, 154, 11, 18, 200, 13, 19, 252, 13,
   21, 22, 14, 22, 219, 15, 23, 146, 17, 24, 226, 20, 25, 235, 20, 26, 33, 21,

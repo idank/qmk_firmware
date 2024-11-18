@@ -285,9 +285,10 @@ def write_generated_code(autocorrections: List[Tuple[str, str]],
     f'// Autocorrection dictionary ({len(autocorrections)} entries):\n',
     ''.join(sorted(f'//   {typo:<{len(max_typo)}} -> {correction}\n'
                    for typo, correction in autocorrections)),
-    f'\n#define AUTOCORRECTION_MIN_LENGTH {len(min_typo)}  // "{min_typo}"\n',
-    f'#define AUTOCORRECTION_MAX_LENGTH {len(max_typo)}  // "{max_typo}"\n\n',
-    textwrap.fill('static const uint8_t autocorrection_data[%d] PROGMEM = {%s};' % (
+    f'\n#define AUTOCORRECT_MIN_LENGTH {len(min_typo)}  // "{min_typo}"\n',
+    f'#define DICTIONARY_SIZE {len(data)}\n',
+    f'#define AUTOCORRECT_MAX_LENGTH {len(max_typo)}  // "{max_typo}"\n\n',
+    textwrap.fill('static const uint8_t autocorrect_data[%d] PROGMEM = {%s};' % (
       len(data), ', '.join(map(str, data))), width=80, subsequent_indent='  '),
     '\n\n'])
 
@@ -296,7 +297,7 @@ def write_generated_code(autocorrections: List[Tuple[str, str]],
 
 
 def get_default_h_file(dict_file: str) -> str:
-  return os.path.join(os.path.dirname(dict_file), 'autocorrection_data.h')
+  return os.path.join(os.path.dirname(dict_file), 'autocorrect_data.h')
 
 
 def main(argv):
