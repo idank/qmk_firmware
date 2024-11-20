@@ -127,38 +127,54 @@ enum led_location_map {
 };
 
 const uint8_t LED_LIST_OUTER[] = {
-    LED_88,
-    LED_89,
-    LED_90,
-    LED_91,
-    LED_92,
-    LED_93,
-    LED_94,
-    LED_95,
-    LED_96,
-    LED_97,
-    LED_98,
-    LED_99,
-    LED_100,
-    LED_101,
-    LED_102,
-    LED_103,
-    LED_104,
-    LED_105,
-    LED_106,
-    LED_107,
-    LED_108,
-    LED_109,
-    LED_110,
-    LED_111,
-    LED_112,
-    LED_113,
-    LED_114,
-    LED_115,
-    LED_116,
-    LED_117,
-    LED_118,
-    LED_119
+    LED_88,   // 88 -> next to right arrow
+    LED_89,   // 89 -> below down arrow
+    LED_90,   // 90 -> left of left arrow
+    LED_91,   // 91 -> r ctrl/menu
+    LED_92,   // 92 -> r fun/menu
+    LED_93,   // 93 -> r alt
+    LED_94,   // 94 -> out r space
+    LED_95,   // 95 -> in r space
+    LED_96,   // 96 -> in l space
+    LED_97,   // 97 -> out l space
+    LED_98,   // 98 -> l alt
+    LED_99,   // 99 -> l windows
+    LED_100,  // 100 -> l control
+    LED_101,  // 101 -> l shift
+    LED_102,  // 102 -> caps lock
+    LED_103,  // 103 -> tab/grave
+    LED_104,  // 104 -> escape
+    LED_105,  // 105 -> esc/f1
+    LED_106,  // 106 -> f1/f2
+    LED_107,  // 107 -> f3
+    LED_108,  // 108 -> f4/f5
+    LED_109,  // 109 -> f5/f6
+    LED_110,  // 110 -> f7
+    LED_111,  // 111 -> f8/f9
+    LED_112,  // 112 -> f10
+    LED_113,  // 113 -> f11/f12
+    LED_114,  // 114 -> f12/print screen
+    LED_115,  // 115 -> scroll lock
+    LED_116,  // 116 -> pause
+    LED_117,  // 117 -> page up
+    LED_118,  // 118 -> page down
+    LED_119   // 119 -> up arrow
+};
+
+const uint8_t LED_FUNC_KEYS[] = {
+    LED_ESC,  // 01, escape
+    LED_F1,   // 02, f1
+    LED_F2,   // 03, f2
+    LED_F3,   // 04, f3
+    LED_F4,   // 05, f4
+    LED_F5,   // 06, f5
+    LED_F6,   // 07, f6
+    LED_F7,   // 08, f7
+    LED_F8,   // 09, f8
+    LED_F9,   // 10, f9
+    LED_F10,  // 11, f10
+    LED_F11,  // 12, f11
+    LED_F12   // 13, f12
 };
 
 #endif

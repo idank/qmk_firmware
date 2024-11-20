@@ -38,21 +38,11 @@ void oledkit_render_info_user(void) {
 }
 #endif
 
-typedef union {
-  uint32_t raw;
-  struct {
-    bool     rgb_layer_change :1;
-  };
-} user_config_t;
-
-user_config_t user_config;
-
 enum custom_keycodes {
     PFX = SAFE_RANGE,
     INSPE,
     INSPP,
-    COPY,
-    RGB_LYR
+    COPY
 };
 
 // Creating layer aliases
@@ -61,6 +51,10 @@ enum custom_keycodes {
 #define TENKEY_LAYER 2
 #define FUNCTION_LAYER 3
 
+// Creating HSV color aliases
+#define HSV_CyberYELLOW     25, 255, 255
+#define HSV_CyberBLUE       HSV_CYAN
+
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [DEFAULT_LAYER] = LAYOUT(
@@ -68,7 +62,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_GRV   , KC_Q    , KC_W     , KC_E     , KC_R        , KC_T         ,                                     KC_Y   , KC_U    , KC_I     , KC_O     , KC_P     , KC_BSLS  ,
     KC_CAPS  , KC_A    , KC_S     , KC_D     , KC_F        , KC_G         ,                                     KC_H   , KC_J    , KC_K     , KC_L     , KC_SCLN  , KC_QUOT  ,
     KC_LSFT  , KC_Z    , KC_X     , KC_C     , KC_V        , KC_B         , KC_LBRC ,        KC_RBRC     ,      KC_N   , KC_M    , KC_COMM  , KC_DOT   , KC_SLSH  , KC_DEL   ,
-    KC_LCTL  , COPY    , KC_LWIN  , KC_LALT  , LT(2,KC_SPC), LT(3,KC_TAB) , QK_KB_7 ,        LT(4,KC_ENT),LT(5,KC_BSPC),                                 TG(1)    , KC_INS
+    KC_LCTL  , COPY    , KC_LWIN  , KC_LALT  , LT(2,KC_SPC), LT(3,KC_TAB) , SCRL_MO ,        LT(4,KC_ENT),LT(5,KC_BSPC),                                 TG(1)    , KC_INS
   ),
 
   [MOUSE_LAYER] = LAYOUT(
@@ -92,32 +86,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______  , _______  , _______  , _______  , _______  , _______  ,                                  _______  , _______  , _______  , _______  , _______  , _______  ,
     _______  , LSG(KC_S), _______  , _______  , _______  , _______  ,                                  CPI_D1K  , CPI_D100 , CPI_I100 , CPI_I1K  , KBC_SAVE , KBC_RST  ,
     XXXXXXX  , _______  , SCRL_DVD , SCRL_DVI , SCRL_MO  , SCRL_TO  , EE_CLR   ,            EE_CLR   , KC_HOME  , KC_PGDN  , KC_PGUP  , KC_END   , _______  , _______  ,
-    QK_BOOT  , _______  , KC_LEFT  , KC_DOWN  , KC_UP    , KC_RGHT  , _______  ,            _______  , KC_BSPC  ,                                  RGB_LYR  , _______
+    QK_BOOT  , _______  , KC_LEFT  , KC_DOWN  , KC_UP    , KC_RGHT  , _______  ,            _______  , KC_BSPC  ,                                  _______  , _______
   ),
 };
 
 void pointing_device_init_user(void) {
     set_auto_mouse_enable(true);
+    set_auto_mouse_layer(MOUSE_LAYER);
 }
 
 void keyboard_post_init_user(void) {
-    user_config.raw = eeconfig_read_user();
-
-    if(user_config.rgb_layer_change) {
-        rgblight_enable_noeeprom();
-        rgblight_sethsv_noeeprom(HSV_RED);
-        rgblight_mode_noeeprom(1);
-    }
-}
-
-void eeconfig_init_user(void) {
-    user_config.raw = 0;
-    user_config.rgb_layer_change = true;
-    eeconfig_update_user(user_config.raw);
-
-    rgblight_enable();
+    #ifdef RGBLIGHT_ENABLE
     rgblight_sethsv(HSV_RED);
     rgblight_mode(1);
+    #endif
 }
 
 // clang-format on
@@ -125,53 +107,31 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     // Auto enable scroll mode when the highest layer is 3
     keyball_set_scroll_mode(get_highest_layer(state) == 3);
 
-    switch(get_highest_layer(state)) {
+    uint8_t layer = biton32(state);
+
+    #ifdef RGBLIGHT_ENABLE
+    switch(layer) {
+        case DEFAULT_LAYER:
+            rgblight_sethsv(HSV_RED);
+            break;
         case MOUSE_LAYER:
-            if (user_config.rgb_layer_change) { rgblight_sethsv_noeeprom(HSV_WHITE); rgblight_mode_noeeprom(1); }
+            rgblight_sethsv(HSV_WHITE);
             break;
         case TENKEY_LAYER:
-            if (user_config.rgb_layer_change) { rgblight_sethsv_noeeprom(HSV_MAGENTA); rgblight_mode_noeeprom(1); }
+            rgblight_sethsv(HSV_CyberBLUE);
             break;
         case FUNCTION_LAYER:
-            if (user_config.rgb_layer_change) { rgblight_sethsv_noeeprom(29, 255, 255); rgblight_mode_noeeprom(1); } // Yeller
-            break;
-        case DEFAULT_LAYER:
-            if (user_config.rgb_layer_change) { rgblight_sethsv_noeeprom(HSV_RED); rgblight_mode_noeeprom(1); }
+            rgblight_sethsv(HSV_CyberYELLOW);
             break;
     }
+    #endif
 
     return state;
 }
 
-bool process_record_user(uint16_t keycode, keyrecord_t* record) {
-    #include "macros.inl"
-
-    switch(keycode) {
-        case RGB_LYR:
-            if (record->event.pressed) {
-                user_config.rgb_layer_change ^= 1;
-                eeconfig_update_user(user_config.raw);
-                if (user_config.rgb_layer_change) { layer_state_set(layer_state); }
-            }
-            return false;
-        case RGB_MODE_FORWARD ... RGB_MODE_GRADIENT:
-            if (record->event.pressed) {
-                if(user_config.rgb_layer_change) {
-                    user_config.rgb_layer_change = false;
-                    eeconfig_update_user(user_config.raw);
-                }
-            }
-            return true;
-            break;
-        default:
-            return true;
-    }
-
-    return true;
-}
-
 // ***************** RGB TIMEOUT *****************
 
+#ifdef RGBLIGHT_ENABLE
 static uint32_t key_timer;           // timer for last keyboard activity, use 32bit value and function to make longer idle time possible
 static void refresh_rgb(void);       // refreshes the activity timer and RGB, invoke whenever any activity happens
 static void check_rgb_timeout(void); // checks if enough time has passed for RGB to timeout
@@ -216,3 +176,4 @@ void post_encoder_update_user(uint8_t index, bool clockwise) {
     refresh_rgb();
 #endif
 }
+#endif

@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define AUTO_MOUSE_DEFAULT_LAYER 1
 
 #define RGBLIGHT_SLEEP
-#define RGBLIGHT_TIMEOUT 600000 // ms to wait for time out
+#define RGBLIGHT_TIMEOUT 900000 // ms to wait for time out
 
 // 900,000 ms is 15 mins
 // 600,000 ms is 10 mins
